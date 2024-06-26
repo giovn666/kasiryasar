@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu Kasir Makanan</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .menu-container {
+    background-color: #fff;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .menu-item span {
+    flex: 1;
+  }
+
+  .menu-item select {
+    width: 80px;
+    margin-left: 10px;
+  }
+
+  #total {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  #receipt {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;
+    border-radius: 5px;
+  }
+
+  button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+  <div class="menu-container">
+    <h2>Menu Kasir Makanan</h2>
+    <div id="menu-list">
+      <!-- Daftar menu akan dimasukkan di sini menggunakan JavaScript -->
+    </div>
+    <div id="total">
+      <strong>Total Pembelian:</strong> Rp <span id="total-price">0</span>
+    </div>
+    <button onclick="printReceipt()">Cetak Struk</button>
+    <div id="receipt"></div>
+  </div>
+
+  <script>
+    // Daftar menu makanan dan minuman beserta harga
+    const menuItems = [
+      { name: 'Nasi Goreng', price: 15000 },
+      { name: 'Ayam Goreng', price: 20000 },
+      { name: 'Soto Ayam', price: 18000 },
+      { name: 'Es Teh', price: 5000 },
+      { name: 'Es Jeruk', price: 6000 },
+      { name: 'Kopi', price: 7000 }
+    ];
+
+    // Function untuk menampilkan menu
+    function displayMenu() {
+      const menuList = document.getElementById('menu-list');
+
+      menuItems.forEach(item => {
+        const menuItem = document.createElement('div');
+        menuItem.classList.add('menu-item');
+        menuItem.innerHTML = `
+          <span>${item.name}</span>
+          <span>Rp ${item.price}</span>
+          <select id="${item.name.replace(/\s+/g, '-').toLowerCase()}-quantity" onchange="calculateTotal()">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <span id="${item.name.replace(/\s+/g, '-').toLowerCase()}-subtotal">Rp 0</span>
+        `;
+        menuList.appendChild(menuItem);
+      });
+    }
+
+    // Function untuk menghitung subtotal dan total pembelian
+    function calculateTotal() {
+      let totalPrice = 0;
+
+      menuItems.forEach(item => {
+        const quantity = parseInt(document.getElementById(`${item.name.replace(/\s+/g, '-').toLowerCase()}-quantity`).value);
+        const subtotal = quantity * item.price;
+        totalPrice += subtotal;
+        document.getElementById(`${item.name.replace(/\s+/g, '-').toLowerCase()}-subtotal`).textContent = `Rp ${subtotal}`;
+      });
+
+      document.getElementById('total-price').textContent = totalPrice;
+    }
+
+    // Function untuk mencetak struk
+    function printReceipt() {
+      const selectedItems = menuItems.filter(item => {
+        const quantity = parseInt(document.getElementById(`${item.name.replace(/\s+/g, '-').toLowerCase()}-quantity`).value);
+        return quantity > 0;
+      });
+
+      let receiptHTML = '<h3>Struk Pembelian:</h3>';
+      let totalPurchase = 0;
+
+      selectedItems.forEach(item => {
+        const quantity = parseInt(document.getElementById(`${item.name.replace(/\s+/g, '-').toLowerCase()}-quantity`).value);
+        const subtotal = quantity * item.price;
+        receiptHTML += `<p>${item.name} - ${quantity} x Rp ${item.price} = Rp ${subtotal}</p>`;
+        totalPurchase += subtotal;
+      });
+
+      receiptHTML += `<p><strong>Total Pembelian:</strong> Rp ${totalPurchase}</p>`;
+      document.getElementById('receipt').innerHTML = receiptHTML;
+    }
+
+    // Panggil function untuk menampilkan menu saat halaman dimuat
+    displayMenu();
+  </script>
+</body>
+</html>
